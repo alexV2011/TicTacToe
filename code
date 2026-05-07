@@ -1,0 +1,267 @@
+#include <iostream>
+#include <string>
+#include <ctime>
+#include <cstdlib>
+#include <random>
+
+
+using namespace std;
+
+char board[9] = {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '};
+void showBoard();
+void XPlayerChoice();
+void OPlayerChoice();
+void computerChoice();
+int countBoard(char symbol);
+char checkWinner();
+void computerVsPlayer();
+void playerVsPlayer();
+
+
+int main()
+{
+	int mode;
+	cout << "1. Computer vs. Player." << "\n";
+	cout << "2. Player vs. Player" << "\n";
+	cout << "Select Game Mode." << endl;
+	cin >> mode;
+	switch (mode)
+	{
+	case 1 :
+		computerVsPlayer();
+		break;
+	case 2:
+		playerVsPlayer();
+		break;
+	default :
+		cout << "Please select VALID game mode." << endl;
+		break;
+	}
+	
+
+}
+
+void computerVsPlayer()
+{
+	string playerName;
+	cout << "Enter your name: " << endl;
+	cin >> playerName;
+	while (true)
+	{
+		system("cls");
+		showBoard();
+		// Player X's Turn
+		if (countBoard('X') == countBoard('O'))
+		{
+			cout << playerName << "'s Turn." << endl;
+			XPlayerChoice();
+		}
+		// Computer's Turn (O)
+		else
+		{
+			computerChoice();
+		}
+		char winner = checkWinner();
+		if (winner == 'X')
+		{
+			system("cls");
+			showBoard();
+			cout << playerName << " Won the game!!" << endl;
+			break;
+		}
+
+		else if (winner == 'O')
+		{
+			system("cls");
+			showBoard();
+			cout << "Haha! This was too easy, I won, You LOSE!!!" << endl;
+			break;
+		}
+
+		else if (winner == 'D')
+		{
+			system("cls");
+			showBoard();
+			cout << "Game is a draw." << endl;
+			break;
+
+		}
+
+	}
+}
+
+void computerChoice()
+{
+	srand(time(0));
+	int choice;
+	do
+	{
+		choice = rand() % 9; // range 0-8
+	}
+
+	while (board[choice] != ' ');
+	{
+		board[choice] = 'O';
+	}
+}
+
+void XPlayerChoice()
+{
+
+	while (true)
+	{
+		cout << "Select your position (1-9): ";
+		int choice;
+		cin >> choice;
+		choice--; //<-- computer logic starts at 0, so by doing this, the player doesn't have to worry about subtracting 1 to their desired position on the board. 
+
+		if (choice < 0 || choice > 8)
+		{
+			cout << "Invalid input!! Choose a number 1-9." << endl;
+		}
+		else if (board[choice] != ' ')
+		{
+			cout << "Hey! That spot's taken! Choose an empty position." << endl;
+		}
+
+		else 
+		{
+			board[choice] = 'X';
+			break;
+		}
+	}
+}
+
+void OPlayerChoice()
+{
+
+	while (true)
+	{
+		cout << "Select your position (1-9): ";
+		int choice;
+		cin >> choice;
+		choice--; //<-- computer logic starts at 0, so by doing this, the player doesn't have to worry about subtracting 1 to their desired position on the board. 
+
+		if (choice < 0 || choice > 8)
+		{
+			cout << "Invalid input! Choose a number 1-9." << endl;
+		}
+		else if (board[choice] != ' ')
+		{
+			cout << "Are you blind? Choose an empty position." << endl;
+		}
+
+		else
+		{
+			board[choice] = 'O';
+			break;
+		}
+	}
+}
+
+void playerVsPlayer()
+{
+	string XPlayerName, OPlayerName;
+	cout << "Enter X Player Name: ";
+	cin >> XPlayerName;
+	cout << "Enter O Player Name: ";
+	cin >> OPlayerName;
+	while(true)
+	{
+		system("cls");
+		showBoard();
+		if (countBoard('X') == countBoard('O'))
+		{
+			cout << XPlayerName << "'s Turn." << endl;
+			XPlayerChoice();
+		}
+
+		else
+		{
+			cout << OPlayerName << "'s Turn." << endl;
+			OPlayerChoice();
+		}
+
+		char winner = checkWinner();
+		if (winner == 'X')
+		{
+			system("cls");
+			showBoard();
+			cout << XPlayerName << " Won The Game." << endl;
+			break;
+		}
+		else if (winner == 'O')
+		{
+			system("cls");
+			showBoard();
+			cout << OPlayerName << " Won The Game." << endl;
+			break;
+		}
+
+		else if (winner == 'D')
+		{
+			cout << "Game is a Draw." << endl;
+			break;
+		}
+	}
+
+}
+
+int countBoard(char symbol) // countBoard fuction counts how many times it appears on the board
+{
+	int total = 0;
+	for (int i = 0; i < 9; i++)
+	{
+		if (board[i] == symbol)
+		total += 1; // it will display count starting from 1 instead of 0. 
+	}
+	return total;
+}
+
+char checkWinner()
+{
+	// checking winner in horizontal row
+	if (board[0] == board[1] && board[1] == board[2] && board[0] != ' ')
+		return board[0];
+	if (board[3] == board[4] && board[4] == board[5] && board[3] != ' ')
+		return board[3];
+	if (board[6] == board[7] && board[7] == board[8] && board[6] != ' ')
+		return board[6];
+	// checking winner in vertical column
+	if (board[0] == board[3] && board[3] == board[6] && board[0] != ' ')
+		return board[0];
+	if (board[1] == board[4] && board[4] == board[7] && board[1] != ' ')
+		return board[1];
+	if (board[2] == board[5] && board[5] == board[8] && board[2] != ' ')
+		return board[2];
+	// checking winner in diagonal
+	if (board[0] == board[4] && board[4] == board[8] && board[0] != ' ')
+		return board[0];
+	if (board[2] == board[4] && board[4] == board[6] && board[2] != ' ')
+		return board[2];
+	// function for when there's a draw or to continue
+	if (countBoard('X') + countBoard('O') < 9)
+		return 'C'; // "C" for continue
+	else
+		return 'D'; // "D" for "it's a draw"
+	
+}
+
+void showBoard()
+{
+
+	cout << "   " << "   |   " << "   |   " << endl;
+	cout << "   " << board[0] << "  |   " << board[1] << "  |   " << board[2] << endl;
+	cout << "   " << "   |   " << "   |   " << endl;
+	cout << "--------------------" << endl;
+
+	cout << "   " << "   |   " << "   |   " << endl;
+	cout << "   " << board[3] << "  |   " << board[4] << "  |   " << board[5] << endl;
+	cout << "   " << "   |   " << "   |   " << endl;
+	cout << "--------------------" << endl;
+
+	cout << "   " << "   |   " << "   |   " << endl;
+	cout << "   " << board[6] << "  |   " << board[7] << "  |   " << board[8] << endl;
+	cout << "   " << "   |   " << "   |   " << endl;
+	cout << "--------------------" << endl;
+}
